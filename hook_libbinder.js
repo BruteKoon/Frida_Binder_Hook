@@ -1,3 +1,14 @@
+/**
+ * frida -U -q -n com.google.android.keep -e "Process.enumerateModules();
+ * 결과
+ * {
+ *	base :0x70d29b7000
+ *	name : libbinder.so
+ *	path : /system/lib64/libbinder.so
+ *	size :507904
+ *
+ * }
+ */
 
 
 
