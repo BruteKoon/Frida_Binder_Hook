@@ -23,7 +23,9 @@ Java.perform(function(){
 			// args[2] : 특정 구조체를 가리키는 포인터
 			var fd = args[0];
 			var cmd = args[1];
-			console.log(args[0]);
+			
+			if(cmd != 0xc0306201) return; // example은 0xc0306201 주소가 BINDER_WRITE_READ인데, 내 기기에 맞게 포팅해야함.
+			var data = args[2]; // binder_write_read에 대한 포인터
 		}
 	})
 
