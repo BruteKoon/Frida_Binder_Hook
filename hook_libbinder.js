@@ -51,6 +51,11 @@ Java.perform(function(){
 
 			var data = args[2]; // binder_write_read에 대한 포인터
 			var binder_write_read = parse_struct_binder_write_read(data);
+
+			if(binder_write_read.write_size > 0){
+				//not yet!!!!!!!!!!!!!!!!!!!
+				handle_write(binder_write_read.write_buffer, binder_write_read.write_size, binder_write_read.write_consumed);
+			}
 		}
 	})
 
