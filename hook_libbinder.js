@@ -11,6 +11,25 @@
  */
 
 
+// // http://androidxref.com/kernel_3.18/xref/drivers/staging/android/uapi/binder.h#77 ==> blog에 나온 주소
+// http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h ==> 기기에 맞는 커널 버전
+function parse_struct_binder_write_read(binder_write_read){
+	var offset = 8; //64b
+
+	return{
+		"write_size": binder_write_read.readU64(),
+		"write_consumed": binder_write_read.add(offset).readU64(),
+		"write_buffer": binder_write_read.add(offset*2).readPointer(),
+		"read_size": binder_write_read.add(offset*3).readU64(),
+		"read.consumed": binder_write_read.add(offset*4).readU64(),
+		"read_buffer": binder_write_read.add(offset*5).readPointer()
+
+
+	}
+
+}
+
+
 
 Java.perform(function(){
 	
@@ -24,8 +43,14 @@ Java.perform(function(){
 			var fd = args[0];
 			var cmd = args[1];
 			
+
 			if(cmd != 0xc0306201) return; // example은 0xc0306201 주소가 BINDER_WRITE_READ인데, 내 기기에 맞게 포팅해야함.
+			//https://android.googlesource.com/platform/system/sepolicy/+/master/public/ioctl_defines
+			//해당 주소를 참조하면, 0xc0306201이 BINDER_WRITE_READ로 정의됨을 확인 할 수 있음.
+			//추가적으로 binder_debug 파일에 과정을 수행 시 0xc0306201 주소가 나오며... 어느정도 유추는 가능
+
 			var data = args[2]; // binder_write_read에 대한 포인터
+			var binder_write_read = parse_struct_binder_write_read(data);
 		}
 	})
 
