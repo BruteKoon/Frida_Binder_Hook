@@ -15,7 +15,7 @@ var CACHE_LOG = "";
 
 //로그 출력함수
 function log(type, message){
-	if(message.ToString() == CACHE_LOG.toString()) return; //prevent duplication logs
+	if(message.toString() == CACHE_LOG.toString()) return; //prevent duplication logs
 
 	CACHE_LOG = message;
 	if(PYMODE){
