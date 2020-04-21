@@ -10,6 +10,23 @@
  * }
  */
 
+const PYMODE = false;
+var CACHE_LOG = "";
+
+function log(type, message){
+	if(message.ToString() == CACHE_LOG.toString()) return; //prevent duplication logs
+
+	CACHE_LOG = message;
+	if(PYMODE){
+		send({'type':type, 'message': message});
+	}
+	else{
+		console.log('[' + type + '] ' + message);
+	}
+}
+
+
+
 // http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h
 // enum_binder_driver_command_protocol
 var binder_driver_command_protocol = {
@@ -32,6 +49,51 @@ var binder_driver_command_protocol = {
     	"BC_DEAD_BINDER_DONE": 16,
 
 };
+function parse_binder_transaction_data(binder_transaction_data){
+	return {
+        	"target": { // can either be u32 (handle) or 64b ptr
+            		"handle": binder_transaction_data.readU32(),
+            		"ptr": binder_transaction_data.readPointer()
+        	},
+        	"cookie": binder_transaction_data.add(8).readPointer(),
+        	"code": binder_transaction_data.add(16).readU32(),
+        	"flags": binder_transaction_data.add(20).readU32(),
+        	"sender_pid": binder_transaction_data.add(24).readS32(),
+        	"sender_euid": binder_transaction_data.add(28).readU32(),
+        	"data_size": binder_transaction_data.add(32).readU64(),
+        	"offsets_size": binder_transaction_data.add(40).readU64(),
+        	"data": {
+            	"ptr": {
+                	"buffer": binder_transaction_data.add(48).readPointer(),
+                	"offsets": binder_transaction_data.add(56).readPointer()
+            	},
+            	"buf": binder_transaction_data.add(48).readByteArray(8)
+        }
+    }
+}
+
+
+function handle_write(write_buffer, write_size, write_comsuned){
+	var cmd = write_buffer.readU32() & 0xff;
+	var ptr = write_buffer.add(write_consumed +4);
+	var end = write_buffer.add(write_size);
+
+	switch (cmd) {
+		case binder_driver_command_protocol.BC_TRANSACTION:
+		case binder_driver_command_protocol.BC_REPLY:
+			var binder_transaction_data = parse_binder_transaction_data(ptr);
+
+			//show me secrets
+			log("INFO", "\n" + 
+				hexdump(binder_transaction_data.data.ptr.buffer, {
+					length: binder_transaction_data.data_size,
+					ansi: true,}) + "\n");
+			break;
+		default:
+	}
+
+
+}
 
 
 
