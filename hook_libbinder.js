@@ -10,12 +10,35 @@
  * }
  */
 
+// http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h
+// enum_binder_driver_command_protocol
+var binder_driver_command_protocol = {
+	"BC_TRANSACTION": 0,
+	"BC_REPLY": 1,
+	"BC_ACQUIRE_RESULT": 2,
+	"BC_FREE_BUFFER": 3,
+	"BC_INCREFS": 4,
+	"BC_ACQUIRE": 5,
+	"BC_RELEASE": 6,
+	"BC_DECREFS" :7,
+    	"BC_INCREFS_DONE": 8,
+    	"BC_ACQUIRE_DONE": 9,
+   	 "BC_ATTEMPT_ACQUIRE": 10,
+    	"BC_REGISTER_LOOPER": 11,
+    	"BC_ENTER_LOOPER": 12,
+    	"BC_EXIT_LOOPER": 13,
+    	"BC_REQUEST_DEATH_NOTIFICATION": 14,
+    	"BC_CLEAR_DEATH_NOTIFICATION": 15,
+    	"BC_DEAD_BINDER_DONE": 16,
+
+};
+
+
 
 // // http://androidxref.com/kernel_3.18/xref/drivers/staging/android/uapi/binder.h#77 ==> blog에 나온 주소
 // http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h ==> 기기에 맞는 커널 버전
 function parse_struct_binder_write_read(binder_write_read){
 	var offset = 8; //64b
-
 	return{
 		"write_size": binder_write_read.readU64(),
 		"write_consumed": binder_write_read.add(offset).readU64(),
@@ -23,10 +46,7 @@ function parse_struct_binder_write_read(binder_write_read){
 		"read_size": binder_write_read.add(offset*3).readU64(),
 		"read.consumed": binder_write_read.add(offset*4).readU64(),
 		"read_buffer": binder_write_read.add(offset*5).readPointer()
-
-
 	}
-
 }
 
 
