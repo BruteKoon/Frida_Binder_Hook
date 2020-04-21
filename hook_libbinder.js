@@ -13,6 +13,7 @@
 const PYMODE = false;
 var CACHE_LOG = "";
 
+//로그 출력함수
 function log(type, message){
 	if(message.ToString() == CACHE_LOG.toString()) return; //prevent duplication logs
 
@@ -29,6 +30,7 @@ function log(type, message){
 
 // http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h
 // enum_binder_driver_command_protocol
+// 프로토콜 정의
 var binder_driver_command_protocol = {
 	"BC_TRANSACTION": 0,
 	"BC_REPLY": 1,
@@ -49,6 +51,8 @@ var binder_driver_command_protocol = {
     	"BC_DEAD_BINDER_DONE": 16,
 
 };
+
+//transaction_data 구조
 function parse_binder_transaction_data(binder_transaction_data){
 	return {
         	"target": { // can either be u32 (handle) or 64b ptr
@@ -73,6 +77,8 @@ function parse_binder_transaction_data(binder_transaction_data){
 }
 
 
+
+// BC_TRANSACTION / BC_REPLY buffer 내부 확인 할 수 있는 함수
 function handle_write(write_buffer, write_size, write_comsuned){
 	var cmd = write_buffer.readU32() & 0xff;
 	var ptr = write_buffer.add(write_consumed +4);
@@ -99,6 +105,7 @@ function handle_write(write_buffer, write_size, write_comsuned){
 
 // // http://androidxref.com/kernel_3.18/xref/drivers/staging/android/uapi/binder.h#77 ==> blog에 나온 주소
 // http://androidxref.com/kernel_3.10/xref/include/uapi/linux/android/binder.h ==> 기기에 맞는 커널 버전
+// biner_write_read 구조 정의
 function parse_struct_binder_write_read(binder_write_read){
 	var offset = 8; //64b
 	return{
