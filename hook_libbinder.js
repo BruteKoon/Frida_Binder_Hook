@@ -79,7 +79,7 @@ function parse_binder_transaction_data(binder_transaction_data){
 
 
 // BC_TRANSACTION / BC_REPLY buffer 내부 확인 할 수 있는 함수
-function handle_write(write_buffer, write_size, write_comsuned){
+function handle_write(write_buffer, write_size, write_consumed){
 	var cmd = write_buffer.readU32() & 0xff;
 	var ptr = write_buffer.add(write_consumed +4);
 	var end = write_buffer.add(write_size);
